@@ -1,0 +1,126 @@
+name: Merge request workflow
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types:
+      - closed
+
+jobs:
+  if_merged:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo The PR was merged
+
+  Install:
+    needs: if_merged
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Code checkout
+        uses: actions/checkout@v4.1.1
+        with:
+          token: ${{ secrets.WORKFLOW_TOKEN }}
+
+      - name: Setup NodeJS
+        uses: actions/setup-node@v4.0.0
+        with:
+          node-version: 14
+
+      - name: Cache node modules
+        uses: actions/cache@v3.3.2
+        with:
+          path: node_modules
+          key: node_modules-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: node_modules-
+
+      - name: Install packages with npm
+        run: |
+          npm ci
+
+  Build:
+    needs: Install
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Code checkout
+        uses: actions/checkout@v4.1.1
+        with:
+          token: ${{ secrets.WORKFLOW_TOKEN }}
+
+      - name: Setup NodeJS
+        uses: actions/setup-node@v4.0.0
+        with:
+          node-version: 14
+
+      - name: Cache node modules
+        uses: actions/cache@v3.3.2
+        with:
+          path: node_modules
+          key: node_modules-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Build
+        run: |
+          npm rebuild node-sass --force
+          npm run build -- --colors
+      - name: Cache node modules and build folder
+        if: ${{ github.ref == 'refs/heads/master' }}
+        uses: actions/cache@v3.3.2
+        with:
+          path: |
+            ~/.npm
+            ./node_modules
+            ./build
+          key: ${{ runner.os }}-build-${{ github.run_id }}
+          restore-keys: ${{ runner.os }}-build-${{ github.run_id }}
+
+  Test:
+    needs: Install
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Code checkout
+        uses: actions/checkout@v4.1.1
+        with:
+          token: ${{ secrets.WORKFLOW_TOKEN }}
+
+      - name: Setup NodeJS
+        uses: actions/setup-node@v4.0.0
+        with:
+          node-version: 14
+
+      - name: Cache node modules
+        uses: actions/cache@v3.3.2
+        with:
+          path: node_modules
+          key: node_modules-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Run tests
+        run: |
+          npm run test -- --colors
+
+  Deploy:
+    needs: [Build, Test]
+    runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/master' }}
+
+    steps:
+      - name: Run playbook
+        uses: dawidd6/action-ansible-playbook@v2
+        with:
+          # Required, playbook filepath
+          playbook: ../ansible/ec2_deploy.yml
+          # Optional, directory where playbooks live
+          directory: ./
+          # Optional, SSH private key
+          key: ${{secrets.SSH_PRIVATE_KEY}}
+          # Optional, SSH known hosts file content
+          known_hosts: |
+            example.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl
+          # Optional, encrypted vault password
+          vault_password: ${{secrets.VAULT_PASSWORD}}
+
+
+
