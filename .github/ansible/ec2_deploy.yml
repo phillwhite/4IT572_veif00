@@ -2,6 +2,9 @@
   hosts: localhost
   connection: local
 
+  vars_files:
+    - ./app/.github/ansible/group_vars/all/aws.yml
+
   tasks:
     - name: Launch EC2 instance
       ec2_instance:
@@ -60,7 +63,7 @@
     - name: Get project files from git
       git:
         repo: 'https://github.com/phillwhite/4IT572_veif00.git'
-        dest: ./
+        dest: ./app
     - name: Build an image and push it to a private repo
       docker_image:
         build:
