@@ -126,12 +126,9 @@ jobs:
           # Required, playbook filepath
           playbook: ec2_deploy.yml
           # Optional, directory where playbooks live
-          directory: ./.github/ansible/
+          directory: ./app/.github/ansible/
           # Optional, SSH private key
           key: ${{secrets.SSH_PRIVATE_KEY}}
-          # Optional, SSH known hosts file content
-          known_hosts: |
-            ec2-34-239-108-146.compute-1.amazonaws.com
           # Optional, encrypted vault password
           vault_password: ${{secrets.VAULT_PASSWORD}}
 
