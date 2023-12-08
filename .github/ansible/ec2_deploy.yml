@@ -60,7 +60,7 @@
     - name: Get project files from git
       git:
         repo: 'https://github.com/phillwhite/4IT572_veif00.git'
-        dest: ./app
+        dest: ./
     - name: Build an image and push it to a private repo
       docker_image:
         build:
