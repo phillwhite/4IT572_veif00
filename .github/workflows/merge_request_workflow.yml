@@ -131,6 +131,8 @@ jobs:
           playbook: ec2_deploy.yml
           # Optional, directory where playbooks live
           directory: ./.github/ansible/
+          # Optional, SSH private key
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
 
 
 
