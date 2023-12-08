@@ -25,8 +25,9 @@
         var: ec2_instance_result
 
     - name: Add instance host to group
+      state: running
       add_host:
-        hostname: "{{ item.public_ip }}"
+        hostname: "{{ item.public_ip_address }}"
         groupname: launched
       loop: "{{ ec2_instance_result.instances }}"
 
