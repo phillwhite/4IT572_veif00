@@ -125,7 +125,7 @@ jobs:
           AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
           AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
           AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
-        uses: dawidd6/action-ansible-playbook@v2
+        uses: dawidd6/action-ansible-playbook@v2.6.1
         with:
           # Required, playbook filepath
           playbook: ec2_deploy.yml
