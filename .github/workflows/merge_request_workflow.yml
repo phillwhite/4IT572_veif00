@@ -112,16 +112,26 @@ jobs:
         with:
           token: ${{ secrets.WORKFLOW_TOKEN }}
 
+      - name: Setup Python
+        uses: actions/setup-python@v5.0.0
+        with:
+          python-version: '3.10'
+
+      - name: Install Ansible and AWS SDKs
+        run: pip3 install ansible boto boto3
+
       - name: Run playbook
         uses: dawidd6/action-ansible-playbook@v2
         with:
           # Required, playbook filepath
-          playbook: ansible/ec2_deploy.yml
+          playbook: ec2_deploy.yml
+          # Optional, directory where playbooks live
+          directory: ./.github/ansible/
           # Optional, SSH private key
           key: ${{secrets.SSH_PRIVATE_KEY}}
           # Optional, SSH known hosts file content
           known_hosts: |
-            example.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl
+            ec2-34-239-108-146.compute-1.amazonaws.com ssh-ed25519 ${{ secrets.SSH_PRIVATE_KEY }}
           # Optional, encrypted vault password
           vault_password: ${{secrets.VAULT_PASSWORD}}
 
