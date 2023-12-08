@@ -2,11 +2,6 @@
   hosts: localhost
   connection: local
 
-  environment:
-    AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
-    AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
-    AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
-
   tasks:
     - name: Launch EC2 instance
       ec2_instance:
@@ -20,9 +15,9 @@
         wait: yes
         count: 1
         security_group: eshop
-        aws_access_key: ${{ secrets.AWS_ACCESS_KEY }}
-        aws_secret_key: ${{ secrets.AWS_SECRET_KEY }}
-        security_token: ${{ secrets.AWS_SESSION_TOKEN }}
+        aws_access_key: ${{ access_key }}
+        aws_secret_key: ${{ secret_key }}
+        security_token: ${{ session_token }}
       register: ec2_instance_result
 
     - name: Add instance host to group
