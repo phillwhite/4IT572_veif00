@@ -26,7 +26,6 @@
 
     - name: Add instance host to group
       add_host:
-        state: running
         hostname: "{{ item.network_interfaces[0].association.public_ip }}"
         groupname: launched
       loop: "{{ ec2_instance_result.instances }}"
