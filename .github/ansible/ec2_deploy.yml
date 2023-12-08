@@ -18,6 +18,7 @@
         aws_access_key: "{{ lookup('env', 'AWS_ACCESS_KEY') }}"
         aws_secret_key: "{{ lookup('env', 'AWS_SECRET_KEY') }}"
         security_token: "{{ lookup('env', 'AWS_SESSION_TOKEN') }}"
+        state: running
       register: ec2_instance_result
 
     - name: Debug EC2 instance result
@@ -25,7 +26,6 @@
         var: ec2_instance_result
 
     - name: Add instance host to group
-      state: running
       add_host:
         hostname: "{{ item.public_ip_address }}"
         groupname: launched
