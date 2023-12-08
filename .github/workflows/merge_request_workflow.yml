@@ -121,6 +121,10 @@ jobs:
         run: pip3 install ansible boto boto3
 
       - name: Run playbook
+        env:
+          AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
+          AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
+          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
         uses: dawidd6/action-ansible-playbook@v2
         with:
           # Required, playbook filepath
@@ -129,6 +133,9 @@ jobs:
           directory: ./.github/ansible/
           # Optional, SSH private key
           key: ${{secrets.SSH_PRIVATE_KEY}}
+          # Optional, SSH known hosts file content
+          known_hosts: |
+            ec2-174-129-91-100.compute-1.amazonaws.com ssh-ed25519 ${{ secrets.SSH_PRIVATE_KEY }}
           # Optional, encrypted vault password
           vault_password: ${{secrets.VAULT_PASSWORD}}
 
