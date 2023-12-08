@@ -3,6 +3,26 @@
   connection: local
 
   tasks:
+    - name: Get information about existing EC2 instances
+      ec2_instance_info:
+        region: us-east-1
+        aws_access_key: "{{ lookup('env', 'AWS_ACCESS_KEY') }}"
+        aws_secret_key: "{{ lookup('env', 'AWS_SECRET_KEY') }}"
+        security_token: "{{ lookup('env', 'AWS_SESSION_TOKEN') }}"
+      register: ec2_info
+
+    - name: Remove old EC2 instance
+      ec2_instance:
+        instance_ids: "{{ item.instance_id }}"
+        state: absent
+        filters:
+          "instance-state-name": "running"
+        region: us-east-1
+        aws_access_key: "{{ lookup('env', 'AWS_ACCESS_KEY') }}"
+        aws_secret_key: "{{ lookup('env', 'AWS_SECRET_KEY') }}"
+        security_token: "{{ lookup('env', 'AWS_SESSION_TOKEN') }}"
+      loop: "{{ ec2_info.instances }}"
+
     - name: Launch EC2 instance
       ec2_instance:
         instance_type: t2.medium
